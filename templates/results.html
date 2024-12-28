@@ -1,21 +1,41 @@
-<!-- results.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Search Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .container { width: 80%; margin: 0 auto; text-align: center; padding: 20px; }
+        input[type="text"] { width: 60%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .results { text-align: left; margin-top: 20px; }
+        .result-item { margin-bottom: 20px; }
+        .result-item a { color: #007BFF; text-decoration: none; font-size: 18px; }
+        .result-item a:hover { text-decoration: underline; }
+        .result-item p { margin: 5px 0; color: #555; }
+    </style>
 </head>
 <body>
-    <h1>Search Results</h1>
-    {% if results %}
-        <ul>
-        {% for result in results %}
-            <li>
-                <a href="{{ result['url'] }}" target="_blank">{{ result['title'] }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No results found.</p>
-    {% endif %}
+    <div class="container">
+        <h1>Search Results</h1>
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Enter search terms" value="{{ query }}" required>
+            <button type="submit">Search</button>
+        </form>
+        <div class="results">
+            {% if results %}
+                <ul>
+                {% for result in results %}
+                    <li class="result-item">
+                        <a href="{{ result['url'] }}" target="_blank">{{ result['title'] }}</a>
+                        <p>{{ result['summary'] }}</p>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>
