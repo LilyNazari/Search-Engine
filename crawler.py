@@ -111,5 +111,4 @@ if __name__ == "__main__":
 
 
 #NEXT:
-#HANDLE THE SERVER
-#Modify the frontend (start.html) to display search results, including title and content snippets.and check the course for ideas.
+#HANDLE THE SERVER & wiki
