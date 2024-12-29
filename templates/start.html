@@ -1,42 +1,35 @@
 <!DOCTYPE html>
 <html>
+    <style>
+        h1{ color:#BF8F54  ; text-align: center }
+        .header {position: fixed; top: 0; width: 100%; background-color: #F2F2F2; z-index: 10; padding: 0;}
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0;background-color: #404040 ; }
+        .container { width: 80%; margin: 0 auto; text-align: center; padding: 0px; }
+        .search-bar {text-align: center;}
+        input[type="text"]  { width: 60%; max-width: 600px; box-sizing: border-box; padding: 20px; margin: 10px 0; background-color:#728C4A ; color: #404040  }
+        input[type="text"]::placeholder { color:#404040 ;opacity: 1; }
+        button { padding: 20px; background-color:#BF8F54 ; color: #404040; border: none; cursor: pointer; }
+        button:hover { background-color: #A65A49; }
+        .static-text { color: 	#BF8F54  }
+        .results { text-align: left ; min-height: 300px; margin-top: 100px;}
+        .result-item a { color: #A65A49 ; text-decoration: none; font-size: 18px; }
+        .result-item a:hover { text-decoration: underline; }
+        .result-item p { margin: 0; color: 	#F2F2F2; }
+        .summary { color: 	#F2F2F2; font-size: 14px; }
+        .highlight {background-color: #728C4A ; font-weight: bold;}
+    </style>
 <head>
     <title>Search Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-        }
-        h1 {
-            color: #333;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-        .results {
-            margin-top: 20px;
-        }
-        .result-item {
-            margin-bottom: 10px;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
-    <h1>Search for Content</h1>
+    <h1>Search Here!</h1>
     <div class="search-bar">
         <form action="/" method="get">
             <input type="text" name="q" placeholder="Enter search terms" required>
             <button type="submit">Search</button>
         </form>
-    </div>
+    <div class="static-text">
+        <p>Search for your favorite topics!</p>
     <div class="results">
         {% if results %}
             <h2>Search Results</h2>

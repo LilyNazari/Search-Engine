@@ -8,6 +8,7 @@ from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh import query
 from flask import Flask, request, render_template
+import re
 
 app = Flask(__name__)
 #######################################################CRAWLER#########################################################
@@ -59,9 +60,9 @@ ix = index.open_dir("indexdir")
 def search():
     query_terms = request.args.get('q')  # The input query from the user
     if not query_terms:
-        return render_template('start.html', results=[])  # If no query is provided, return empty results
+        return render_template('start.html', results=[])  # Empty results in case no query is provided
     else:
-        # Split the query into words and operator 
+        # Spliting the query into words and operator
         query_terms = query_terms.strip().lower()
         
         if "and" in query_terms:
@@ -82,7 +83,22 @@ def search():
         
         with ix.searcher() as searcher:
             results = searcher.search(combined_query)
-            results_list = [{"title": result['title'], "url": result['url']} for result in results]
+            #results_list = [{"title": result['title'], "url": result['url'], "summary": result['summary']} for result in results]
+            def highlight_text(summary, words):  #Using regular expression to find and wrap query terms for highlighting
+                highlighted_summary = summary
+                for word in words:
+                    highlighted_summary = re.sub(rf'({re.escape(word)})', r'<span class="highlight">\1</span>', highlighted_summary, flags=re.IGNORECASE)
+                return highlighted_summary
+            
+            results_list = []
+            for result in results:
+                title = result['title']
+                url = result['url']
+                summary = result['summary']
+                highlighted_summary = highlight_text(summary, words)
+                
+                # Add the result to the results list with highlighted summary
+                results_list.append({"title": title, "url": url, "summary": highlighted_summary})
 
     
     
