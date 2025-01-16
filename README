@@ -1,60 +1,26 @@
-\Write a read me!\
-Task 2: Build a search engine
-Build a search engine with all four components:
-Crawler
-Index
-Query parser and search algorithm
-User Frontend
+Overview
+This project is a Python-based web crawler and search engine built using Flask, BeautifulSoup, Whoosh, and HTML templates. The application crawls a website, indexes its content, and provides a search interface for users to query and retrieve indexed information.
 
-Demonstrate it by crawling one website and making its content available to the user via a web frontend with a simple search form. 
+Features
+Web Crawling:
+-Crawls the given starting URL and all linked pages within the domain.
+-Extracts page titles, content, and summaries (first 200 characters).
+-Indexes the extracted data using Whoosh for fast searching.
 
-Make the result available on the provided demo server.
+Search Engine:
+-Allows users to search for content using a web-based interface.
+-Supports boolean operators (AND and OR) for queries.
+-Highlights query terms in the search results.
 
-Submit the code and the link to the demo deployment.
-
- 
-
-Suggested order of building:
-Week 1 of project:
-
-Create a working environment on your computers
--Create a repository (Gitlab, Github, …) for your project 2 with a .gitignore and a requirements.txt and make sure all group members can access it
-Start with adding a .gitignore and a requirements.txt file to the repository (requirements are requests and beautifulsoup4)
-Create a `crawler.py` file and define the skeleton of the crawling algorithm: 
-Crawl (=get and parse) all HTML pages on a certain server 
-that can directly or indirectly be reached from a start URL 
-by following links on the pages. 
-Do not follow links to URLs on other servers and only process HTML responses. 
-Test the crawler with a simple website, e.g., https://vm009.rz.uos.de/crawl/index.html 
-Build an in-memory index from the HTML text content found. 
-The most straightforward index is a dictionary with words as keys and lists of URLs that refer to pages that include the word.
-Add a function 'search' that takes a list of words as a parameter and returns (by using the index) a list of links to all pages that contain all the words from the list. 
-Test the functionality.
-Don't worry if you don't get that far! Use the element chat and the Friday session to ask questions, report problems and tell about hurdles and obstacles!
-
-Week 2:
-
-Replace the simple index with code using the woosh library (will be introduced in week 6 - https://whoosh.readthedocs.io/en/latest/intro.html ).
-Build a flask app (will be introduced in week 6) with two URLs that show the following behavior:
-GET home URL: Show search form
-GET search URL with parameter q: Search for q using the index and display a list of URLs as links
-Week 3:
-
-Improve the index by adding information (ideas will be presented in week 7)
-Improve the output by including title and teaser text
-Install your search engine on the demo server provided (will be introduced in week 7)
- 
-What to hand in
-1. Please provide:
-
-Source code - either as a public github url (or invite tthelen to your private repository) or ZIP upload for this Vips task
-The URL of your deployment
- 
-2. Who did what?
-
-If you didn't contribute equally to your project, please describe who did what (in max 2 short sentences per contributor)
+Web Interface:
+-User-friendly interface with a search bar.
+-Displays search results with titles, URLs, and highlighted summaries.
+-Provides feedback for no results or invalid queries.
 
 
-
-
-
+Requirements:
+Python 
+Flask
+BeautifulSoup(bs4)
+Whoosh
+Requests

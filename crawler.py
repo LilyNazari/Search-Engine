@@ -8,52 +8,64 @@ from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh import query
 from flask import Flask, request, render_template
+from urllib.parse import urljoin
 import re
+import os
 
-app = Flask(__name__)
 #######################################################CRAWLER#########################################################
-
+app = Flask(__name__)
 prefix = 'https://vm009.rz.uos.de/crawl/'
 start_url = prefix + 'index.html'
-agenda = [start_url]
+agenda = [(start_url, 0)]
 visited = set()
+max_depth = 2
+
+index_dir = "indexdir"
+if not os.path.exists(index_dir):
+    os.mkdir(index_dir)
 
 schema = Schema(title=TEXT(stored=True), content=TEXT(stored=True), summary=TEXT(stored=True), url=ID(stored=True))
 ix = create_in("indexdir", schema)       
 writer = ix.writer()
+ix = index.open_dir("indexdir")
 
 
 
 while agenda:
-    url = agenda.pop()
-    if url in visited:
+    url, depth = agenda.pop(0)
+    if url in visited or depth > max_depth:
         continue
     visited.add(url)
-    print("Get:", url)
+    print("Processing:", url)
     try:
         r = requests.get(url)
         if r.status_code == 200:
             soup = BeautifulSoup(r.content, 'html.parser')
+
             title = soup.title.string if soup.title else "No title"
             content = soup.get_text()
+            content = " ".join(content.split()[:1000])
             summary = content[:200] + "..." if len(content) > 200 else content 
+            
             writer.add_document(title=title, content=content, summary=summary, url=url)
-            for link in soup.find_all('a', href= True):
-                full_url = prefix+link['href']
-                if full_url not in visited and full_url not in agenda:
-                    agenda.append(full_url)
+            
+            if depth < max_depth:
+                for link in soup.find_all('a', href=True):
+                    href = link['href']
+                    full_url = urljoin(prefix, href)  # Convert relative URLs to absolute
+                    if (
+                        full_url.startswith(prefix)  # Ensure links belong to the target domain
+                        and full_url not in visited  # Avoid revisiting
+                        and not full_url.endswith(('.jpg', '.png', '.pdf'))  # Filter out unwanted files
+                    ):
+                        agenda.append((full_url, depth + 1))
     except Exception as e:
         print(f"Failed to get {url}: {e}")
 
 writer.commit()
 print("Crawling and indexing completed!")
 ###################################################DATA RETRIEVAL#########################################################
-ix = index.open_dir("indexdir")
 
-
-#@app.route("/")
-#def start():
-    #return render_template('start.html')
 
 @app.route("/", methods=["GET"])
 @app.route("/search")
