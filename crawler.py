@@ -7,74 +7,57 @@ from whoosh.fields import *
 from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh import query
-from flask import Flask, request, render_template
-from urllib.parse import urljoin
+from flask import Flask, request, render_template, url_for
 import re
-import os
 
-#######################################################CRAWLER#########################################################
 app = Flask(__name__)
+#######################################################CRAWLER#########################################################
+app.config['APPLICATION_ROOT'] = '/u056'
 prefix = 'https://vm009.rz.uos.de/crawl/'
 start_url = prefix + 'index.html'
-agenda = [(start_url, 0)]
+agenda = [start_url]
 visited = set()
-max_depth = 2
-
-index_dir = "indexdir"
-if not os.path.exists(index_dir):
-    os.mkdir(index_dir)
 
 schema = Schema(title=TEXT(stored=True), content=TEXT(stored=True), summary=TEXT(stored=True), url=ID(stored=True))
 ix = create_in("indexdir", schema)       
 writer = ix.writer()
-ix = index.open_dir("indexdir")
 
 
 
 while agenda:
-    url, depth = agenda.pop(0)
-    if url in visited or depth > max_depth:
+    url = agenda.pop()
+    if url in visited:
         continue
     visited.add(url)
-    print("Processing:", url)
+    print("Get:", url)
     try:
         r = requests.get(url)
         if r.status_code == 200:
             soup = BeautifulSoup(r.content, 'html.parser')
-
             title = soup.title.string if soup.title else "No title"
             content = soup.get_text()
-            content = " ".join(content.split()[:1000])
             summary = content[:200] + "..." if len(content) > 200 else content 
-            
             writer.add_document(title=title, content=content, summary=summary, url=url)
-            
-            if depth < max_depth:
-                for link in soup.find_all('a', href=True):
-                    href = link['href']
-                    full_url = urljoin(prefix, href)  # Convert relative URLs to absolute
-                    if (
-                        full_url.startswith(prefix)  # Ensure links belong to the target domain
-                        and full_url not in visited  # Avoid revisiting
-                        and not full_url.endswith(('.jpg', '.png', '.pdf'))  # Filter out unwanted files
-                    ):
-                        agenda.append((full_url, depth + 1))
+            for link in soup.find_all('a', href= True):
+                full_url = prefix+link['href']
+                if full_url not in visited and full_url not in agenda:
+                    agenda.append(full_url)
     except Exception as e:
         print(f"Failed to get {url}: {e}")
 
 writer.commit()
 print("Crawling and indexing completed!")
+ix = index.open_dir("indexdir")
 ###################################################DATA RETRIEVAL#########################################################
-
 
 @app.route("/", methods=["GET"])
 @app.route("/search")
 def search():
-    query_terms = request.args.get('q')  # The input query from the user
+    query_terms = request.args.get('q')  # the input query from the user
     if not query_terms:
-        return render_template('start.html', results=[])  # Empty results in case no query is provided
+        return render_template('start.html', results=[])  # empty results in case no query is provided
     else:
-        # Spliting the query into words and operator
+        # spliting the query into words and operator
         query_terms = query_terms.strip().lower()
         
         if "and" in query_terms:
@@ -96,7 +79,7 @@ def search():
         with ix.searcher() as searcher:
             results = searcher.search(combined_query)
             #results_list = [{"title": result['title'], "url": result['url'], "summary": result['summary']} for result in results]
-            def highlight_text(summary, words):  #Using regular expression to find and wrap query terms for highlighting
+            def highlight_text(summary, words):  #using regular expression to find and wrap query terms for highlighting
                 highlighted_summary = summary
                 for word in words:
                     highlighted_summary = re.sub(rf'({re.escape(word)})', r'<span class="highlight">\1</span>', highlighted_summary, flags=re.IGNORECASE)
@@ -110,7 +93,8 @@ def search():
                 highlighted_summary = highlight_text(summary, words)
                 
                 # Add the result to the results list with highlighted summary
-                results_list.append({"title": title, "url": url, "summary": highlighted_summary})
+                #results_list.append({"title": title, "url": url, "summary": highlighted_summary})
+                results_list.append({"title": title, "url": url_for('search', q=result['url']), "summary": highlighted_summary})
 
     
     
@@ -120,7 +104,3 @@ def search():
 
 if __name__ == "__main__":
     app.run(debug=True)  
-
-
-#NEXT:
-#HANDLE THE SERVER & wiki
