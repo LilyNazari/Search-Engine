@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html>
-    <style>
-        h1{ color:#BF8F54  ; text-align: center }
-        .header {position: fixed; top: 0; width: 100%; background-color: #F2F2F2; z-index: 10; padding: 0;}
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0;background-color: #404040 ; }
-        .container { width: 80%; margin: 0 auto; text-align: center; padding: 0px; }
-        .search-bar {text-align: center;}
-        input[type="text"]  { width: 60%; max-width: 600px; box-sizing: border-box; padding: 20px; margin: 10px 0; background-color:#728C4A ; color: #404040 ; border: none; border-radius: 15px; }
-        input[type="text"]::placeholder { color:#404040 ;opacity: 1; }
-        button { padding: 20px; background-color:#BF8F54 ; color: #404040; border: none; cursor: pointer; border-radius: 15px; }
-        button:hover { background-color: #A65A49; }
-        .static-text { color: 	#BF8F54  }
-        .results { text-align: left ; min-height: 300px; margin-top: 100px;}
-        .result-item a { color: #A65A49 ; text-decoration: none; font-size: 18px; }
-        .result-item a:hover { text-decoration: underline; }
-        .result-item p { margin: 0; color: 	#F2F2F2; }
-        .summary { color: 	#F2F2F2; font-size: 14px; }
-        .highlight {background-color: #728C4A ; font-weight: bold;}
-    </style>
 <head>
     <title>Search Results</title>
+    <style>
+        h1 { color: #BF8F54; text-align: center }
+        .header { position: fixed; top: 0; width: 100%; background-color: #F2F2F2; z-index: 10; padding: 0; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #404040; }
+        .container { width: 80%; margin: 0 auto; text-align: center; padding: 0; }
+        .search-bar { text-align: center; }
+        input[type="text"] { width: 60%; max-width: 600px; box-sizing: border-box; padding: 20px; margin: 10px 0; background-color: #728C4A; color: #404040; border: none; border-radius: 15px; }
+        input[type="text"]::placeholder { color: #404040; opacity: 1; }
+        button { padding: 20px; background-color: #BF8F54; color: #404040; border: none; cursor: pointer; border-radius: 15px; }
+        button:hover { background-color: #A65A49; }
+        .static-text { color: #BF8F54; }
+        .results { text-align: left; min-height: 300px; margin-top: 100px; }
+        .result-item a { color: #A65A49; text-decoration: none; font-size: 18px; }
+        .result-item a:hover { text-decoration: underline; }
+        .result-item p { margin: 0; color: #F2F2F2; }
+        .summary { color: #F2F2F2; font-size: 14px; }
+        .highlight { background-color: #728C4A; font-weight: bold; }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Search Here!</h1>
-        <form action="/search" method="get">
+        <form action="{{ url_for('search') }}" method="get">
             <input type="text" name="q" placeholder="Enter search terms" value="{{ query }}" required>
             <button type="submit">Search</button>
         </form>
         <div class="static-text">
             <p>Search for your favorite topics!</p>
+        </div>
         <div class="results">
             {% if results %}
                 <ul>
                 {% for result in results %}
                     <li class="result-item">
-                        <a href="{{ result['url'] }}" target="_blank">{{ result['title'] }}</a>
+                        <a href="{{ result.url }}" target="_blank">{{ result.title }}</a>
                         <p class="summary">{{ result.summary | safe }}</p>
                     </li>
                 {% endfor %}
@@ -47,10 +48,3 @@
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
