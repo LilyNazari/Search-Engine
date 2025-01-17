@@ -24,7 +24,7 @@
 <body>
     <div class="container">
         <h1>Search Here!</h1>
-        <form action="{{ url_for('search') }}" method="get">
+        <form action="/search" method="get">
             <input type="text" name="q" placeholder="Enter search terms" value="{{ query }}" required>
             <button type="submit">Search</button>
         </form>
@@ -47,3 +47,10 @@
     </div>
 </body>
 </html>
+
+
+
+
+
+
+

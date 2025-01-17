@@ -7,7 +7,7 @@ from whoosh.fields import *
 from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh import query
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template
 import re
 
 app = Flask(__name__)
@@ -93,8 +93,7 @@ def search():
                 highlighted_summary = highlight_text(summary, words)
                 
                 # Add the result to the results list with highlighted summary
-                #results_list.append({"title": title, "url": url, "summary": highlighted_summary})
-                results_list.append({"title": title, "url": url_for('search', q=result['url']), "summary": highlighted_summary})
+                results_list.append({"title": title, "url": url, "summary": highlighted_summary})
 
     
     
